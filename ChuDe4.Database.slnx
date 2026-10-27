@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HuongDan/HuongDan.csproj" />
+  <Project Path="Bai2/Bai2.csproj" />
+  <Project Path="Bai3/Bai3.csproj" />
+  <Project Path="Bai4/Bai4.csproj" />
+</Solution>
