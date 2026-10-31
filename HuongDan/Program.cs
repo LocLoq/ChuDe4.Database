@@ -2,7 +2,7 @@ namespace HuongDan
 {
     internal static class Program
     {
-        internal const string ConnectionString = @"server=.\LOQLSERVER01; database=ChuDe5_HuongDan_RetaurantManagement; Integrated Security = true; TrustServerCertificate=True;";
+        internal const string ConnectionString = @"server=.\LOQLSERVER01; database=PT_App_Desktop_RetaurantManagement; Integrated Security = true; TrustServerCertificate=True;";
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>

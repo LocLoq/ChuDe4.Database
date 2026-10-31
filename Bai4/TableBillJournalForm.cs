@@ -5,6 +5,7 @@ namespace Bai4;
 public partial class TableBillJournalForm : Form
 {
     private readonly int _tableId;
+    public TableBillJournalForm() : this(0, string.Empty) { }
     public TableBillJournalForm(int tableId, string tableCode)
     { _tableId = tableId; InitializeComponent(); Text = $"Nhật ký hóa đơn - {tableCode}"; }
 
@@ -14,11 +15,11 @@ public partial class TableBillJournalForm : Form
         {
             var query = $"""
                 SELECT i.ID AS [Mã hóa đơn], i.CheckoutDate AS [Ngày lập],
-                       a.FullName AS [Nhân viên], i.Total AS [Thực thu],
-                       CAST(COALESCE(i.Tax,0) AS decimal(18,2)) AS [Thuế],
-                       CAST(COALESCE(i.Discount,0) AS decimal(18,2)) AS [Giảm giá],
+                       a.FullName AS [Nhân viên], CAST(i.Amount * (1 - COALESCE(i.Discount,0) + COALESCE(i.Tax,0)) AS decimal(18,2)) AS [Thực thu],
+                       CAST(i.Amount * COALESCE(i.Tax,0) AS decimal(18,2)) AS [Thuế],
+                       CAST(i.Amount * COALESCE(i.Discount,0) AS decimal(18,2)) AS [Giảm giá],
                        i.Status AS [Đã trả]
-                FROM Invoice i JOIN Account a ON a.AccountName=i.AccountName
+                FROM Bills i JOIN Account a ON a.AccountName=i.Account
                 WHERE i.TableID={_tableId} ORDER BY i.CheckoutDate DESC, i.ID DESC
                 """;
             using var reader = Database.ExecuteQuery(query);

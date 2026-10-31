@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lvCategory = new ListView();
             chID = new ColumnHeader();
             chName = new ColumnHeader();
@@ -43,7 +44,7 @@
             btnDelete = new Button();
             btnUpdate = new Button();
             btnAdd = new Button();
-            contextMenuStrip1 = new ContextMenuStrip();
+            contextMenuStrip1 = new ContextMenuStrip(components);
             tsmViewFood = new ToolStripMenuItem();
             tsmDelete = new ToolStripMenuItem();
             contextMenuStrip1.Items.AddRange(new ToolStripItem[] { tsmViewFood, tsmDelete });

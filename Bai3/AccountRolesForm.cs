@@ -5,6 +5,7 @@ namespace Bai3;
 public partial class AccountRolesForm : Form
 {
     private readonly string _accountName;
+    public AccountRolesForm() : this(string.Empty) { }
     public AccountRolesForm(string accountName)
     { _accountName = accountName; InitializeComponent(); Text = $"Vai trò của {accountName}"; }
 

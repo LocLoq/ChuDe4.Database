@@ -4,7 +4,11 @@ namespace Bai2;
 
 public partial class BillsForm : Form
 {
-    public BillsForm() => InitializeComponent();
+    public BillsForm()
+    {
+        InitializeComponent();
+        dtFrom.Value = DateTime.Today.AddDays(-30);
+    }
     private void BillsForm_Load(object sender, EventArgs e) => LoadBills();
     private void btnLoad_Click(object sender, EventArgs e) => LoadBills();
 
@@ -15,14 +19,15 @@ public partial class BillsForm : Form
         try
         {
             var query = $"""
-                SELECT i.ID AS [Mã hóa đơn], i.Name AS [Tên hóa đơn], t.TableCode AS [Bàn],
+                SELECT i.ID AS [Mã hóa đơn], i.Name AS [Tên hóa đơn], t.Name AS [Bàn],
                        i.CheckoutDate AS [Ngày],
-                       CAST(i.Total + COALESCE(i.Discount,0) - COALESCE(i.Tax,0) AS decimal(18,2)) AS [Trước giảm giá],
-                       CAST(COALESCE(i.Discount,0) AS decimal(18,2)) AS [Giảm giá],
-                       CAST(i.Total AS decimal(18,2)) AS [Thực thu]
-                FROM Invoice i JOIN dbo.[Table] t ON t.ID=i.TableID
-                WHERE i.Status=1 AND i.CheckoutDate >= '{dtFrom.Value:yyyyMMdd}'
-                  AND i.CheckoutDate < DATEADD(day,1,'{dtTo.Value:yyyyMMdd}')
+                       CAST(i.Amount AS decimal(18,2)) AS [Trước giảm giá],
+                       CAST(i.Amount * COALESCE(i.Discount,0) AS decimal(18,2)) AS [Giảm giá],
+                       CAST(i.Amount * (1 - COALESCE(i.Discount,0) + COALESCE(i.Tax,0)) AS decimal(18,2)) AS [Thực thu]
+                FROM Bills i JOIN dbo.[Table] t ON t.ID=i.TableID
+                WHERE i.Status=1 AND (i.CheckoutDate IS NULL OR
+                  (i.CheckoutDate >= '{dtFrom.Value:yyyyMMdd}'
+                  AND i.CheckoutDate < DATEADD(day,1,'{dtTo.Value:yyyyMMdd}')))
                 ORDER BY i.CheckoutDate DESC, i.ID DESC
                 """;
             using var reader = Database.ExecuteQuery(query);

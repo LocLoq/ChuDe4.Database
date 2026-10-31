@@ -32,7 +32,7 @@ public partial class AccountManager : Form
             int status = cmbStatus.SelectedIndex switch { 1 => 1, 2 => 0, _ => -1 };
             var query = $"""
                 SELECT a.AccountName AS [Tài khoản], a.FullName AS [Họ tên], a.Email,
-                       a.Phone AS [Điện thoại], a.DateCreated AS [Ngày tạo],
+                       a.Tell AS [Điện thoại], a.DateCreated AS [Ngày tạo],
                        CAST(CASE WHEN EXISTS (SELECT 1 FROM RoleAccount ra WHERE ra.AccountName=a.AccountName AND ra.Actived=1) THEN 1 ELSE 0 END AS bit) AS [Hoạt động]
                 FROM Account a
                 WHERE ({role}=0 OR EXISTS (SELECT 1 FROM RoleAccount ra WHERE ra.AccountName=a.AccountName AND ra.RoleID={role}))
@@ -46,6 +46,17 @@ public partial class AccountManager : Form
     }
 
     private void btnFilter_Click(object sender, EventArgs e) => LoadAccounts();
+
+    private void btnNew_Click(object sender, EventArgs e)
+    {
+        dgvAccounts.CurrentCell = null;
+        dgvAccounts.ClearSelection();
+        txtAccount.Clear();
+        txtPassword.Clear();
+        txtFullName.Clear();
+        txtEmail.Clear();
+        txtPhone.Clear();
+    }
 
     private void dgvAccounts_SelectionChanged(object sender, EventArgs e)
     {
@@ -74,7 +85,7 @@ public partial class AccountManager : Form
         var password = Program.SqlText(txtPassword.Text);
         return withPassword
             ? $"N'{name}', N'{password}', N'{full}', {email}, N'{phone}'"
-            : $"FullName=N'{full}', Email={email}, Phone=N'{phone}'";
+            : $"FullName=N'{full}', Email={email}, Tell=N'{phone}'";
     }
 
     private void btnAdd_Click(object sender, EventArgs e)
@@ -87,7 +98,7 @@ public partial class AccountManager : Form
             using var connection = new SqlConnection(Program.ConnectionString);
             connection.Open();
             using var transaction = connection.BeginTransaction();
-            Database.ExecuteNonQuery($"INSERT Account (AccountName, [Password], FullName, Email, Phone) VALUES ({AccountValues(true)})", connection, transaction);
+            Database.ExecuteNonQuery($"INSERT Account (AccountName, [Password], FullName, Email, Tell) VALUES ({AccountValues(true)})", connection, transaction);
             Database.ExecuteNonQuery($"INSERT RoleAccount (AccountName, RoleID, Actived) VALUES (N'{name}', {role}, 1)", connection, transaction);
             transaction.Commit();
             LoadAccounts();
